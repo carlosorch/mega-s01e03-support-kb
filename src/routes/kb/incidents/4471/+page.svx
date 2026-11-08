@@ -2,29 +2,43 @@
 layout: runbook
 title: '#4471 · dates parse mm/dd in eu locales'
 owner: support desk
-status: known
-reviewed: 2026-09-30
+status: split
+reviewed: 2026-11-08
 ---
 
 <script>
   import CauseTable from '#lib/kb/CauseTable.svelte';
   import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
   import Callout from '#lib/kb/Callout.svelte';
+
+  const repo = 'carlosorch/mega-s01e03-support-kb';
+  const tickets = {
+    parser: { label: `${repo}#1`, href: `https://github.com/${repo}/issues/1` },
+    hint: { label: `${repo}#2`, href: `https://github.com/${repo}/issues/2` },
+  };
 </script>
 
 Since April, people have told us their bookings land on the wrong day: a month flipped. By
 4 October the desk had **412 reports**.
 
-**Merged as one issue.** The parser reads dates month first, and our tenants write the day
-first. The fix is queued.
+**Merged as one issue, but it is two.** The desk merged every report with a matching subject line
+([decision 0001](/kb/decisions/0001-dedupe-by-subject)). Read by cause, the reports split in two:
 
-<Callout>
-Known. One issue, one fix queued.
+- `parser`: the shared parser reads dates month first, and our tenants write the day first. This is
+  the bug the queued fix is for. Tracked in [{tickets.parser.label}]({tickets.parser.href}).
+- `hint`: booking-v3's date field shows `MM/DD/YYYY` but reads the date day first. Only through the
+  form of the three tenants on booking-v3. The parser fix does not touch it. Tracked in
+  [{tickets.hint.label}]({tickets.hint.href}).
+
+The full split, with how each report was placed: [#4471 split](/kb/incidents/4471-split).
+
+<Callout kind="warn">
+Split. Two problems, two tickets. The queued parser fix closes only the first.
 </Callout>
 
 ## What was merged
 
-<CauseTable ticket={4471} />
+<CauseTable ticket={4471} {tickets} />
 
 ## Since April
 
@@ -32,5 +46,8 @@ Known. One issue, one fix queued.
 
 ## Lessons
 
-- A big ticket is mostly one bug reported many times. Merge early, count once.
-- Write the page while the queue is still in your head.
+- A big ticket can hold more than one bug. Same subject line is not the same cause: check the
+  tenant's booking form and the report body before merging.
+- Count each report once. The export repeats rows when its pages overlap.
+- Keep the page in step with the data. This page said "one issue, one fix queued" while its own
+  table showed a second cause with no ticket.
