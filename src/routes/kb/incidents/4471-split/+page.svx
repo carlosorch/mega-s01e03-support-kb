@@ -1,6 +1,6 @@
 ---
 layout: runbook
-title: '#4471 split · three problems, not one'
+title: '#4471 split · two problems, not one'
 owner: Carlos Ortega
 status: open
 reviewed: 2026-11-08
@@ -14,11 +14,11 @@ signature: Carlos Ortega
 </script>
 
 [#4471](/kb/incidents/4471) says one issue, one fix queued. The reports merged into it describe
-three different problems. The queued parser fix closes only the first one.
+two different problems. The queued parser fix closes only the first one.
 
 <Callout kind="warn">
-#4471 is not known. Two of its three problems have no fix queued and no ticket of their own until
-now. Each one now has its own ticket, linked in the table.
+#4471 is not one known issue. One of its two problems, hint, had no fix queued and no ticket of
+its own until now. Each problem now has its own ticket, linked in the table.
 </Callout>
 
 ## The split
@@ -38,25 +38,25 @@ tenant's way, day first. People type what the hint says and the date comes out f
 happens through the `form` channel of the three tenants on booking-v3: alder.physio, copper.studio
 and pale.harbour. Fixing the parser does not touch it. The hint or the form's reading has to change.
 
-**`one-day`.** These dates move by one day, not by a day/month swap: "Tuesday 6 October showed as
-Monday", "Client in Lisbon got Tuesday. Client in Toronto got Monday", "every booking in June is
-one day off". That pattern points at time zones or a day boundary, not at date order. The desk
-already listed these reports in `desk-notes.json` as a one-day move, then filed them under
-`parser` by tenant. The parser fix will not close them.
+Five `parser` reports describe a date that moved by one day, not a day/month swap ("Tuesday 6
+October showed as Monday", "Client in Lisbon got Tuesday. Client in Toronto got Monday"). The desk
+lists them in `desk-notes.json` as a one-day move and counts them under `parser` by tenant; this
+page counts them the same way and footnotes them under the table. If they turn out to be a time
+zone bug, they need a ticket of their own.
 
 ## How the reports were placed
 
 - Tenant, locale and booking form decide `parser` vs `hint` (`causes.ts`). The intake tag does not,
   because intake guesses from the reporter's browser and gets it wrong often. The table shows the
   drift in the "tagged as" column.
-- A report listed in `desk-notes.json` as a one-day move is `one-day`, whatever its tenant.
-- Same subject line is not the same problem. Subjects like "Date is wrong" appear under all three.
-  Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges by subject, and that is how three
+- A report listed in `desk-notes.json` as a one-day move stays under its tenant's cause, as the desk files it.
+- Same subject line is not the same problem. Subjects like "Date is wrong" appear under both.
+  Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges by subject, and that is how two
   problems ended up in one ticket.
 
 ## What changes for the desk
 
-- Reopen #4471 as the `parser` ticket only. Move the other two problems to their own tickets.
+- Keep #4471 as the `parser` ticket only. Move `hint` to its own ticket.
 - When a report comes in about dates, check the tenant's form and the body before merging, not the
   subject.
 - The counts above come from the data at render time. When the desk exports again, rebuild the page.

@@ -1,14 +1,16 @@
-// Splits the reports merged into #4471 by what actually went wrong, so each problem gets its own
-// ticket and count. Builds on causes.ts (tenant + channel decide parser vs hint) and adds the one
-// thing causes.ts only footnotes: reports where the date moved by one day, not day <-> month.
+// Splits the reports merged into #4471 by cause, so each problem gets its own ticket and count.
+// Counts the way the desk's own view does (causes.ts: tenant + channel decide parser vs hint).
+// Reports the desk read as a one-day move stay under their cause and are listed as a footnote.
 import { causeOf, uniqueById, type Report, type Tenant } from '#lib/kb/causes';
 
-export type Problem = 'parser' | 'hint' | 'one-day';
+export type Problem = 'parser' | 'hint';
 
 export type ProblemGroup = {
   problem: Problem;
   issue: number | null;
   reports: Report[];
+  // Of these, how many the desk read as a one-day move (desk-notes.json).
+  oneDay: number;
   tenants: number;
   firstSeen: string;
   lastSeen: string;
@@ -17,10 +19,9 @@ export type ProblemGroup = {
 };
 
 // The GitHub issue that tracks each problem in this repo.
-export const ISSUE_OF: Record<Problem, number> = { parser: 1, hint: 2, 'one-day': 3 };
+export const ISSUE_OF: Record<Problem, number> = { parser: 1, hint: 2 };
 
-export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem | null {
-  if (oneDayMove.includes(r.id)) return 'one-day';
+export function problemOf(r: Report, t: Tenant | undefined): Problem | null {
   return causeOf(r, t);
 }
 
@@ -34,7 +35,7 @@ export function splitTicket(
   const by = new Map<Problem, Report[]>();
   const unplaced: Report[] = [];
   for (const r of merged) {
-    const p = problemOf(r, tenantOf(r), oneDayMove);
+    const p = problemOf(r, tenantOf(r));
     if (p) by.set(p, [...(by.get(p) ?? []), r]);
     else unplaced.push(r);
   }
@@ -45,6 +46,7 @@ export function splitTicket(
         problem,
         issue: ISSUE_OF[problem],
         reports: rs,
+        oneDay: rs.filter((r) => oneDayMove.includes(r.id)).length,
         tenants: new Set(rs.map((r) => r.tenant)).size,
         firstSeen: days[0],
         lastSeen: days[days.length - 1],

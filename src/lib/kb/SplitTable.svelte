@@ -40,6 +40,12 @@
   </tbody>
 </table>
 
+{#each split.groups as g (g.problem)}
+  {#if g.oneDay}
+    <p class="note">{g.oneDay} of the <code>{g.problem}</code> reports read as a one-day move (desk-notes.json); counted under <code>{g.problem}</code> by tenant.</p>
+  {/if}
+{/each}
+
 {#if split.unplaced.length}
   <p class="note">{split.unplaced.length} reports have no tenant on file and are not placed.</p>
 {/if}
