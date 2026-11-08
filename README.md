@@ -31,6 +31,24 @@ src/lib/data/       exports from the ticket system
 
 Support desk. Decision records: whoever signed them.
 
+## Building
+
+```
+pnpm install
+pnpm build        # every page as plain HTML in build/
+```
+
+`vite.config.js` is the smallest SvelteKit + mdsvex setup that renders these pages. It was added
+to this export so the pages can be checked; the `support` repo has its own build.
+
+## #4471 split (added 2026-11-08)
+
+- Page: `src/routes/kb/incidents/4471-split/+page.svx`, signed `Carlos Ortega`.
+- As the desk sees it: `rendered/4471-split.html` (one file, CSS inlined).
+- Logic: `src/lib/kb/split-4471.ts` and `src/lib/kb/SplitTable.svelte`.
+- One GitHub issue per problem in this repo: #1 `parser`, #2 `hint`, #3 `one-day`.
+- How the reports were checked: `analysis/`.
+
 ---
 
 Exported 2026-10-04 from the `support` repo, `apps/kb/` → `src/`.
